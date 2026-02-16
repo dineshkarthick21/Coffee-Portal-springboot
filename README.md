@@ -212,7 +212,117 @@ Configure these in `docker-compose.yml` or pass at runtime:
 - `SPRING_PROFILES_ACTIVE`: Application profile (dev/prod/secure)
 - `SPRING_DATA_MONGODB_URI`: MongoDB connection string
 - `SPRING_DATA_MONGODB_DATABASE`: Database name
+## 🚀 Deployment on Render.com
 
+### Prerequisites
+1. Create a [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) free cluster or use another MongoDB provider
+2. Get your MongoDB connection string
+3. Fork or have access to this GitHub repository
+
+### Step-by-Step Deployment
+
+#### 1. Set up MongoDB Atlas (Free Tier)
+```
+1. Go to https://www.mongodb.com/cloud/atlas
+2. Create a free account and cluster
+3. Create a database user
+4. Whitelist all IPs (0.0.0.0/0) for Render access
+5. Copy your connection string (replace <password> with your actual password)
+   Example: mongodb+srv://username:password@cluster.mongodb.net/javabite
+```
+
+#### 2. Deploy on Render.com
+
+**Option A: Using Render Blueprint (Automated)**
+1. Go to [Render Dashboard](https://dashboard.render.com)
+2. Click "New" → "Blueprint"
+3. Connect your GitHub repository
+4. Render will detect `render.yaml` and configure automatically
+5. Add environment variable:
+   - `SPRING_DATA_MONGODB_URI`: Your MongoDB Atlas connection string
+6. Click "Apply" to deploy
+
+**Option B: Manual Deployment**
+1. Go to [Render Dashboard](https://dashboard.render.com)
+2. Click "New" → "Web Service"
+3. Connect your GitHub repository
+4. Configure:
+   - **Name**: javabite-backend
+   - **Environment**: Docker
+   - **Region**: Oregon (or closest to you)
+   - **Branch**: main
+   - **Docker Build Context**: ./backend
+   - **Dockerfile Path**: ./backend/Dockerfile
+5. Add Environment Variables:
+   ```
+   SPRING_PROFILES_ACTIVE=dev
+   SPRING_DATA_MONGODB_URI=your-mongodb-atlas-connection-string
+   SPRING_DATA_MONGODB_DATABASE=javabite
+   PORT=8080
+   JWT_SECRET=your-secret-key-here
+   JWT_EXPIRATION=86400000
+   ```
+6. Click "Create Web Service"
+
+#### 3. Deploy Frontend (Optional)
+
+**Option A: Using Render Blueprint** (Deploys both backend and frontend)
+- The `render.yaml` file already includes frontend configuration
+- Frontend will automatically connect to your backend API
+
+**Option B: Manual Frontend Deployment**
+1. After backend is deployed, click "New" → "Web Service"
+2. Connect your GitHub repository
+3. Configure:
+   - **Name**: javabite-frontend
+   - **Environment**: Docker
+   - **Region**: Oregon (same as backend)
+   - **Branch**: main
+   - **Docker Build Context**: ./frontend
+   - **Dockerfile Path**: ./frontend/Dockerfile
+4. Add Environment Variable:
+   ```
+   VITE_API_URL=https://your-backend-name.onrender.com
+   ```
+5. Click "Create Web Service"
+
+#### 4. Update Frontend API Configuration
+
+After deployment, update your frontend `src/api/apiClient.js` to use the environment variable or your backend URL:
+```javascript
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+```
+
+#### 5. Verify Deployment
+Once deployed, your services will be available at:
+- **Backend API**: `https://javabite-backend.onrender.com`
+- **Frontend**: `https://javabite-frontend.onrender.com`
+
+Test the endpoints:
+```bash
+# Backend health check
+curl https://your-backend-name.onrender.com/actuator/health
+
+# Frontend health check
+curl https://your-frontend-name.onrender.com/health
+```
+
+### Important Notes
+- **Free Tier Limitations**: 
+  - Service spins down after 15 minutes of inactivity
+  - First request after spin-down takes ~30-50 seconds
+  - 750 hours/month of runtime
+- **Environment Variables**: Never commit secrets to git
+- **MongoDB**: Use MongoDB Atlas free tier (512MB storage)
+- **Uploads**: File uploads will be lost on restart (use cloud storage for production)
+
+### Updating Your Deployment
+Render automatically redeploys when you push to the connected branch:
+```bash
+git add .
+git commit -m "Update application"
+git push origin main
+```
 ## �🔐 User Roles
 
 The system supports multiple user roles with different permissions:

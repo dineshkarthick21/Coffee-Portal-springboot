@@ -28,7 +28,7 @@ import FeedbackForm from "./pages/Customer/FeedbackForm";
 import FeedbackHistory from "./pages/Customer/FeedbackHistory";
 
 // Chef Pages
-import ChefDashboard from "./pages/Chef/ChefDashboard";
+import ChefDashboard from "./pages/Chef/chefDashboard";
 import ChefOrders from "./pages/Chef/ChefOrders";
 import ChefProfile from "./pages/Chef/ChefProfile";
 

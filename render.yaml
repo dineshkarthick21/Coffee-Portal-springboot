@@ -1,0 +1,42 @@
+# Render.com Blueprint for JavaBite Application
+# https://render.com/docs/blueprint-spec
+
+services:
+  # Spring Boot Backend
+  - type: web
+    name: javabite-backend
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: dev
+      - key: SPRING_DATA_MONGODB_URI
+        sync: false  # Set this in Render dashboard or use MongoDB Atlas
+      - key: SPRING_DATA_MONGODB_DATABASE
+        value: javabite
+      - key: PORT
+        value: 8080
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION
+        value: 86400000
+
+  # React Frontend
+  - type: web
+    name: javabite-frontend
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    healthCheckPath: /health
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: javabite-backend
+          envVarKey: RENDER_EXTERNAL_URL

@@ -3,6 +3,9 @@ import axios from 'axios';
 // Use environment variable or default to production backend
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://coffee-portal.onrender.com/api';
 
+console.log('🌐 API Base URL:', API_BASE_URL);
+console.log('🌐 Environment:', import.meta.env.MODE);
+
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,

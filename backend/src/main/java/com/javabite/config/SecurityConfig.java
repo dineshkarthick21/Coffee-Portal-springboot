@@ -45,9 +45,13 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/actuator/**",
+                                "/actuator/health/**"
                         ).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()  // Add fallback for auth endpoints
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // Allow CORS preflight
                         .requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

@@ -49,8 +49,11 @@ A full-stack restaurant management system designed for coffee shops and cafes, b
 
 ## 📋 Prerequisites
 
-Before running this application, ensure you have the following installed:
+### Option 1: Using Docker (Recommended)
+- **Docker** (20.10+)
+- **Docker Compose** (v2.0+)
 
+### Option 2: Local Development
 - **Node.js** (v18 or higher)
 - **Java** (JDK 17)
 - **Maven** (3.6+)
@@ -58,13 +61,56 @@ Before running this application, ensure you have the following installed:
 
 ## 🔧 Installation & Setup
 
-### 1. Clone the Repository
+### Option 1: Quick Start with Docker 🐳
+
+The easiest way to run the application is using Docker Compose:
+
 ```bash
-git clone <repository-url>
+# Clone the repository
+git clone https://github.com/dineshkarthick21/Coffee-Portal-springboot.git
+cd "coffee portal"
+
+# Start all services (MongoDB + Backend)
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+```
+
+The services will be available at:
+- **Backend API**: http://localhost:8080
+- **MongoDB**: localhost:27017
+
+#### Docker Commands
+```bash
+# Build and start services
+docker-compose up --build
+
+# Stop services but keep data
+docker-compose stop
+
+# Remove everything (including volumes/data)
+docker-compose down -v
+
+# View service status
+docker-compose ps
+
+# Access backend container shell
+docker-compose exec backend sh
+```
+
+### Option 2: Local Development Setup
+
+#### 1. Clone the Repository
+```bash
+git clone https://github.com/dineshkarthick21/Coffee-Portal-springboot.git
 cd "coffee portal"
 ```
 
-### 2. Backend Setup
+#### 2. Backend Setup
 
 Navigate to the backend directory:
 ```bash
@@ -83,9 +129,15 @@ Build and run the backend:
 ./mvnw spring-boot:run
 ```
 
+Or build Docker image manually:
+```bash
+docker build -t javabite-backend .
+docker run -p 8080:8080 -e MONGODB_URI=mongodb://host.docker.internal:27017/javabite javabite-backend
+```
+
 The backend server will start on `http://localhost:8080`
 
-### 3. Frontend Setup
+#### 3. Frontend Setup
 
 Navigate to the frontend directory:
 ```bash
@@ -139,7 +191,29 @@ coffee portal/
     └── vite.config.js
 ```
 
-## 🔐 User Roles
+## � Docker Configuration
+
+The project includes Docker support for easy deployment:
+
+### Files
+- **`backend/Dockerfile`**: Multi-stage build for the Spring Boot application
+- **`backend/.dockerignore`**: Excludes unnecessary files from Docker context
+- **`docker-compose.yml`**: Orchestrates MongoDB and Backend services
+
+### Docker Architecture
+- **Stage 1**: Uses Maven to build the application
+- **Stage 2**: Creates lightweight runtime image with JRE 17
+- **Volumes**: Persists MongoDB data and uploaded files
+- **Networks**: Isolated bridge network for service communication
+- **Health Checks**: Monitors service availability
+
+### Environment Variables
+Configure these in `docker-compose.yml` or pass at runtime:
+- `SPRING_PROFILES_ACTIVE`: Application profile (dev/prod/secure)
+- `SPRING_DATA_MONGODB_URI`: MongoDB connection string
+- `SPRING_DATA_MONGODB_DATABASE`: Database name
+
+## �🔐 User Roles
 
 The system supports multiple user roles with different permissions:
 

@@ -43,7 +43,19 @@ src/main/resources/application-prod.properties
 .env.local
 .env.production
 
-# Secrets
-*secret*
-*password*
-*credential*
+# Secrets (but allow DTO/Request classes)
+*secret*.properties
+*secret*.yml
+*secret*.yaml
+*secret*.txt
+*password*.properties
+*password*.yml
+*password*.yaml
+*password*.txt
+*credential*.properties
+*credential*.yml
+*credential*.yaml
+*credential*.txt
+!**/*Request.java
+!**/*Response.java
+!**/*DTO.java
